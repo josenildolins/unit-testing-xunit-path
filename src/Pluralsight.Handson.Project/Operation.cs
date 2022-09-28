@@ -18,19 +18,21 @@
             return firstValue * secondValue;
         }
 
-        public int Divide(int firstValue, int secondValue)
+        public double Divide(double firstValue, double secondValue)
         {
             try
             {
-                return  firstValue / secondValue;
-               
+                if (secondValue == 0)
+                    throw new DivideByZeroException();
+                return firstValue / secondValue;
+
             }
-            catch (Exception)
+            catch (DivideByZeroException)
             {
 
                 throw;
-            }   
-           
-        }   
+            }
+
+        }
     }
 }

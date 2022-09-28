@@ -8,6 +8,6 @@
 
         double Multiply(double firstValue, double secondValue);
 
-        int Divide(int firstValue, int secondValue);
+        double Divide(double firstValue, double secondValue);
     }
 }
