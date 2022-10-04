@@ -1,4 +1,5 @@
 using Xunit;
+using Moq;
 
 namespace CreditCardApplications.Tests
 {
@@ -8,7 +9,10 @@ namespace CreditCardApplications.Tests
         public void ShouldAcceptHighIncomeApplications()
         {
             // Arrange
-            CreditCardApplicationEvaluator sut = new( null );
+            Mock<IFrequentFlyerNumberValidator> mockValidator =
+                new Mock<IFrequentFlyerNumberValidator>();
+
+            CreditCardApplicationEvaluator sut = new(mockValidator.Object);
             
             CreditCardApplication application = new(){ GrossAnnualIncome = 100_000 };
 
@@ -23,7 +27,10 @@ namespace CreditCardApplications.Tests
         public void ShouldReferYoungApplications()
         {
             // Arrange
-            CreditCardApplicationEvaluator sut = new( null );
+            Mock<IFrequentFlyerNumberValidator> mockValidator =
+               new Mock<IFrequentFlyerNumberValidator>();
+
+            CreditCardApplicationEvaluator sut = new(mockValidator.Object);
 
             CreditCardApplication application = new() { Age = 19 };
 
@@ -31,6 +38,26 @@ namespace CreditCardApplications.Tests
             CreditCardApplicationDecision decision = sut.Evaluate(application);
 
             Assert.Equal(CreditCardApplicationDecision.ReferredToHuman, decision);
+        }
+
+        [Fact]
+        public void ShouldDeclineLowIncomeApplications()
+        {
+            // Arrange
+            Mock<IFrequentFlyerNumberValidator> mockValidator =
+                new();
+
+            mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(true);
+
+            CreditCardApplicationEvaluator sut = new(mockValidator.Object);
+
+            CreditCardApplication application = new() { GrossAnnualIncome = 19_99, Age = 42, FrequentFlyerNumber = "x" };
+
+            // Act
+            CreditCardApplicationDecision decision = sut.Evaluate(application);
+
+            // Assert
+            Assert.Equal(CreditCardApplicationDecision.AutoDeclined, decision);
         }
     }
 }
