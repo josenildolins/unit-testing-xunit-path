@@ -49,9 +49,6 @@
             {
                 Console.WriteLine("Valor digitado é invalido");
             }
-
-
-            Console.WriteLine("Resultado" + " = " + result);
         }
     }
 }

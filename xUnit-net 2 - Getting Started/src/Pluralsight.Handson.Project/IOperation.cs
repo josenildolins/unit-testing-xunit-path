@@ -2,6 +2,7 @@
 {
     public interface IOperation
     {
+
         double Add(double firstValue, double secondValue);
 
         double Subtract(double firstValue, double secondValue);
