@@ -63,10 +63,10 @@ namespace CreditCardApplications.Tests
         }
 
         [Fact]
-        public void ReferInvalidFrequentFlyerApplications()
+        public void ShouldReferInvalidFrequentFlyerApplications()
         {
             // Arrange
-            Mock<IFrequentFlyerNumberValidator> mockValidator = new(MockBehavior.Strict);
+            Mock<IFrequentFlyerNumberValidator> mockValidator = new();
 
             mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(false);
 
@@ -82,7 +82,7 @@ namespace CreditCardApplications.Tests
         }
 
         [Fact]
-        public void DeclineLowIncomeApplicationsOutDemo()
+        public void ShouldDeclineLowIncomeApplicationsOutDemo()
         {
             // Arrange
             Mock<IFrequentFlyerNumberValidator> mockValidator = new();
@@ -103,6 +103,26 @@ namespace CreditCardApplications.Tests
 
             // Assert
             Assert.Equal(CreditCardApplicationDecision.AutoDeclined, decision);
+        }
+
+        [Fact]
+        public void ShouldReferWhenLicenseKeyExpired()
+        {
+            // Arrange
+            Mock <IFrequentFlyerNumberValidator> mockValidator = new();
+
+            mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(true);
+            mockValidator.Setup(x => x.LicenseKey).Returns("EXPIRED");
+
+            CreditCardApplicationEvaluator sut = new(mockValidator.Object);
+
+            CreditCardApplication application = new() { Age = 42 };
+
+            // Act
+            CreditCardApplicationDecision decision = sut.Evaluate(application);
+
+            // Assert
+            Assert.Equal(CreditCardApplicationDecision.ReferredToHuman, decision);
         }
     }
 }
