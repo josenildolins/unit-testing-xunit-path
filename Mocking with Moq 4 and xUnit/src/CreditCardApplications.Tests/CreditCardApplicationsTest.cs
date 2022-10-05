@@ -30,6 +30,8 @@ namespace CreditCardApplications.Tests
             Mock<IFrequentFlyerNumberValidator> mockValidator =
                new Mock<IFrequentFlyerNumberValidator>();
 
+            mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(true);
+
             CreditCardApplicationEvaluator sut = new(mockValidator.Object);
 
             CreditCardApplication application = new() { Age = 19 };
@@ -77,6 +79,30 @@ namespace CreditCardApplications.Tests
 
             // Assert
             Assert.Equal(CreditCardApplicationDecision.ReferredToHuman, decision);
+        }
+
+        [Fact]
+        public void DeclineLowIncomeApplicationsOutDemo()
+        {
+            // Arrange
+            Mock<IFrequentFlyerNumberValidator> mockValidator = new();
+
+            bool isValid = true;
+            mockValidator.Setup(x => x.IsValid(It.IsAny<string>(), out isValid));
+
+            CreditCardApplicationEvaluator sut = new(mockValidator.Object);
+
+            CreditCardApplication application = new()
+            {
+                GrossAnnualIncome = 19_99,
+                Age = 42
+            };
+
+            // Act
+            CreditCardApplicationDecision decision = sut.EvaluateUsingOut(application);
+
+            // Assert
+            Assert.Equal(CreditCardApplicationDecision.AutoDeclined, decision);
         }
     }
 }
