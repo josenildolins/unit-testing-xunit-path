@@ -13,8 +13,8 @@ namespace CreditCardApplications.Tests
                 new Mock<IFrequentFlyerNumberValidator>();
 
             CreditCardApplicationEvaluator sut = new(mockValidator.Object);
-            
-            CreditCardApplication application = new(){ GrossAnnualIncome = 100_000 };
+
+            CreditCardApplication application = new() { GrossAnnualIncome = 100_000 };
 
             //Act
             CreditCardApplicationDecision decision = sut.Evaluate(application);
@@ -58,6 +58,25 @@ namespace CreditCardApplications.Tests
 
             // Assert
             Assert.Equal(CreditCardApplicationDecision.AutoDeclined, decision);
+        }
+
+        [Fact]
+        public void ReferInvalidFrequentFlyerApplications()
+        {
+            // Arrange
+            Mock<IFrequentFlyerNumberValidator> mockValidator = new(MockBehavior.Strict);
+
+            mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(false);
+
+            CreditCardApplicationEvaluator sut = new(mockValidator.Object);
+
+            CreditCardApplication application = new();
+
+            // Act
+            CreditCardApplicationDecision decision = sut.Evaluate(application);
+
+            // Assert
+            Assert.Equal(CreditCardApplicationDecision.ReferredToHuman, decision);
         }
     }
 }
