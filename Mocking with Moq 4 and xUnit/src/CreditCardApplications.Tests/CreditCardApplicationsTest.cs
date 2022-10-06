@@ -1,5 +1,6 @@
 using Xunit;
 using Moq;
+using System;
 
 namespace CreditCardApplications.Tests
 {
@@ -223,6 +224,28 @@ namespace CreditCardApplications.Tests
             sut.Evaluate(application);
 
             mockValidator.VerifySet(x => x.ValidationMode = ValidationMode.Detailed);
+        }
+
+        [Fact]
+        public void ReferWhenFrequentFlyerValidationError()
+        {
+            // Arrange
+            Mock<IFrequentFlyerNumberValidator> mockValidator = new();
+
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns("OK");
+
+            mockValidator.Setup(x => x.IsValid(It.IsAny<string>()))
+                .Throws(new Exception("Custom message"));
+
+            CreditCardApplicationEvaluator sut = new(mockValidator.Object);
+
+            CreditCardApplication application = new() { Age = 42 };
+
+            // Act
+            CreditCardApplicationDecision decision = sut.Evaluate(application);
+
+            // Assert
+            Assert.Equal(CreditCardApplicationDecision.ReferredToHuman, decision);
         }
     }
 }
