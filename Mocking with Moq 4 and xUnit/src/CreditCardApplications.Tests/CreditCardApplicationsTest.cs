@@ -128,5 +128,26 @@ namespace CreditCardApplications.Tests
             // Assert
             Assert.Equal(CreditCardApplicationDecision.ReferredToHuman, decision);
         }
+
+        [Fact]
+        public void ShouldUseDetailedLookupForOlderApplications()
+        {
+            //Arrange
+            Mock<IFrequentFlyerNumberValidator> mockValidator = new();
+
+            mockValidator.SetupAllProperties();
+
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns("OK");
+
+            CreditCardApplicationEvaluator sut = new(mockValidator.Object);
+
+            CreditCardApplication application = new() { Age= 30 };
+
+            // Act
+            sut.Evaluate(application);
+
+            // Assert
+            Assert.Equal(ValidationMode.Detailed, mockValidator.Object.ValidationMode);
+        }
     }
 }

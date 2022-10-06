@@ -1,4 +1,6 @@
-﻿namespace CreditCardApplications
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CreditCardApplications
 {
     public class CreditCardApplicationEvaluator
     {
@@ -24,6 +26,8 @@
             {
                 return CreditCardApplicationDecision.ReferredToHuman;
             }
+
+            _validator.ValidationMode = application.Age >= 30 ? ValidationMode.Detailed : ValidationMode.Quick;
 
             bool isValidFrequentFlyerNumber =
                 _validator.IsValid(application.FrequentFlyerNumber);
