@@ -109,10 +109,8 @@ namespace CreditCardApplications.Tests
         public void ShouldReferWhenLicenseKeyExpired()
         {
             // Arrange
-            Mock <IFrequentFlyerNumberValidator> mockValidator = new();
-
-            mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(true);
-            mockValidator.Setup(x => x.LicenseKey).Returns("EXPIRED");
+            Mock<IFrequentFlyerNumberValidator> mockValidator = new();
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns("EXPIRED");
 
             CreditCardApplicationEvaluator sut = new(mockValidator.Object);
 
