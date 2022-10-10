@@ -1,6 +1,7 @@
 using Xunit;
 using Moq;
 using System;
+using System.Collections.Generic;
 
 namespace CreditCardApplications.Tests
 {
@@ -295,9 +296,31 @@ namespace CreditCardApplications.Tests
             Assert.Equal(CreditCardApplicationDecision.ReferredToHuman, FirstDecision);
 
             Assert.Equal(CreditCardApplicationDecision.AutoDeclined, SecondDecision);
+        }
 
+        [Fact]
+        public void ShouldReferInvalidFrequencyFlyerApplications_MultipleCallsSequence()
+        {
+            // Arrange
+            List<string> frequentFlyerNumberPassed = new List<string>();
 
+            Mock<IFrequentFlyerNumberValidator> mockValidator = new();
 
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns("OK");
+            mockValidator.Setup(x => x.IsValid(Capture.In(frequentFlyerNumberPassed)));
+
+            CreditCardApplicationEvaluator sut = new(mockValidator.Object);
+            CreditCardApplication application1 = new() { Age = 25, FrequentFlyerNumber = "aa" };
+            CreditCardApplication application2 = new() { Age = 25, FrequentFlyerNumber = "bb" };
+            CreditCardApplication application3 = new() { Age = 25, FrequentFlyerNumber = "cc" };
+
+            // Act
+            sut.Evaluate(application1);
+            sut.Evaluate(application2);
+            sut.Evaluate(application3);
+
+            // Assert
+            Assert.Equal(new List<string> { "aa", "bb", "cc" }, frequentFlyerNumberPassed);
         }
     }
 }
