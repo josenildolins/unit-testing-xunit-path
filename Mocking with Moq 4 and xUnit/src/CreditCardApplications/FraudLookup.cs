@@ -2,7 +2,7 @@
 {
     public class FraudLookup
     {
-        public bool IsFraudRisk(CreditCardApplication application)
+        virtual public bool IsFraudRisk(CreditCardApplication application)
         {
             if (application.LastName == "smith")
             {
