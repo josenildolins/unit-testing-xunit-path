@@ -1,14 +1,20 @@
-﻿namespace CreditCardApplications
+﻿using System.ComponentModel.Design;
+
+namespace CreditCardApplications
 {
     public class FraudLookup
     {
-        virtual public bool IsFraudRisk(CreditCardApplication application)
+        public bool IsFraudRisk(CreditCardApplication application)
         {
-            if (application.LastName == "smith")
+            return CheckApplication(application);
+        }
+
+       protected virtual bool CheckApplication(CreditCardApplication application)
+        {
+            if (application.LastName == "Smith")
             {
                 return true;
             }
-
             return false;
         }
     }

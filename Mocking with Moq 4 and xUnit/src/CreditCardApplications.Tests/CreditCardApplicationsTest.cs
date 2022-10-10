@@ -1,5 +1,6 @@
 using Xunit;
 using Moq;
+using Moq.Protected;
 using System;
 using System.Collections.Generic;
 
@@ -331,7 +332,9 @@ namespace CreditCardApplications.Tests
 
             Mock<FraudLookup> mockFraudLookup = new();
 
-            mockFraudLookup.Setup(x => x.IsFraudRisk(It.IsAny<CreditCardApplication>())).Returns(true);
+            //mockFraudLookup.Setup(x => x.IsFraudRisk(It.IsAny<CreditCardApplication>())).Returns(true);
+
+            mockFraudLookup.Protected().Setup<bool>("CheckApplication", ItExpr.IsAny<CreditCardApplication>()).Returns(true);
 
             CreditCardApplicationEvaluator sut = new(mockValidator.Object, mockFraudLookup.Object);
 
@@ -342,9 +345,6 @@ namespace CreditCardApplications.Tests
 
             // Assert
             Assert.Equal(CreditCardApplicationDecision.ReferredToHumanFraudRisk, decision);
-
-
-            // Act
         }
     }
 }
